@@ -1,0 +1,78 @@
+/* CE ARENA • Tournament Details concept v1
+   Scoped to .ce-pro-detail. The tournament directory is not modified. */
+.ce-tournament-page .ce-pro-detail{width:100%;margin:0 auto 48px;color:#f3f8ff;font-family:inherit}
+.ce-tournament-page .ce-pro-detail,.ce-tournament-page .ce-pro-detail *{box-sizing:border-box}
+.ce-tournament-page .ce-pro-detail a{text-decoration:none}
+.ce-tournament-page .ce-pro-detail a:focus-visible{outline:3px solid #59dbff;outline-offset:3px}
+.ce-tournament-page .ce-pro-preview{padding:16px 20px;margin:0 0 22px;background:#14304b;border:1px solid #2892bd;border-radius:12px}
+.ce-tournament-page .ce-pro-preview strong{color:#ffffff}
+.ce-tournament-page .ce-pro-preview p{margin:6px 0 0;color:#c3d4e3}
+.ce-tournament-page .ce-pro-hero{position:relative;display:flex;align-items:end;isolation:isolate;min-height:410px;padding:clamp(26px,5vw,64px);overflow:hidden;border:1px solid #1c5474;border-radius:19px;background:#061624;box-shadow:0 24px 70px rgba(0,0,0,.26)}
+.ce-tournament-page .ce-pro-hero-art{position:absolute;inset:0;z-index:-3}
+.ce-tournament-page .ce-pro-hero .ce-pro-hero-art .ce-tournament-artwork{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;min-height:0;margin:0;padding:0;border:0;border-radius:0;background:transparent}
+.ce-tournament-page .ce-pro-hero .ce-pro-hero-art .ce-tournament-artwork img{display:block;width:100%;height:100%;max-width:none;margin:0;padding:0;object-fit:cover;object-position:center 40%;filter:saturate(.98) contrast(1.1) brightness(.77)}
+.ce-tournament-page .ce-pro-hero-wash{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(1,10,20,.96) 0%,rgba(1,11,21,.78) 44%,rgba(1,11,21,.27) 100%),linear-gradient(0deg,rgba(1,9,17,.79),transparent 70%)}
+.ce-tournament-page .ce-pro-hero-inner{position:relative;z-index:1;width:100%;max-width:820px}
+.ce-tournament-page .ce-pro-hero-kicker{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:16px}
+.ce-tournament-page .ce-pro-game-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #2e6784;border-radius:8px;background:rgba(4,23,40,.83);color:#fff;font-size:12px;font-weight:800;text-transform:uppercase}
+.ce-tournament-page .ce-pro-game-pill:before{content:"";display:block;width:8px;height:8px;border-radius:2px;background:#00df4b;box-shadow:0 0 11px rgba(0,223,75,.55)}
+.ce-tournament-page .ce-pro-kicker-text{color:#a0d2e7;font-size:11px;font-weight:800;letter-spacing:.15em}
+.ce-tournament-page .ce-pro-hero h1{margin:0 0 13px;max-width:850px;color:white;font-size:clamp(32px,4.8vw,64px);font-weight:900;line-height:1.08;letter-spacing:-.025em;text-wrap:balance;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.ce-tournament-page .ce-pro-hero-lead{margin:0;color:#d9e9f7;font-size:clamp(14px,1.6vw,18px);font-weight:500;line-height:1.5}
+.ce-tournament-page .ce-pro-hero-facts{display:flex;flex-wrap:wrap;gap:0;margin-top:26px;border-top:1px solid rgba(202,229,247,.27);border-bottom:1px solid rgba(202,229,247,.27);background:rgba(0,12,24,.18)}
+.ce-tournament-page .ce-pro-hero-fact{display:flex;flex-direction:column;gap:7px;padding:15px 27px 15px 0;margin-right:27px;min-width:135px}
+.ce-tournament-page .ce-pro-hero-fact:not(:last-child){border-right:1px solid rgba(198,224,240,.23)}
+.ce-tournament-page .ce-pro-fact-label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#81b3ca}
+.ce-tournament-page .ce-pro-hero-fact strong{font-size:clamp(13px,1.3vw,17px);font-weight:800;color:#fff}
+.ce-tournament-page .ce-pro-hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:23px}
+.ce-tournament-page .ce-pro-button{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:48px;padding:13px 22px;border:1px solid transparent;border-radius:7px;font-size:12px;font-weight:900;letter-spacing:.035em;line-height:1.25;text-align:center;white-space:normal;transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
+.ce-tournament-page .ce-pro-button:hover{transform:translateY(-2px)}
+.ce-tournament-page .ce-pro-button-primary{background:linear-gradient(180deg,#00ed57,#00c83c);border-color:#12f166;color:#002817;box-shadow:0 7px 20px rgba(0,205,69,.17)}
+.ce-tournament-page .ce-pro-button-primary:hover{background:#21f76e;color:#002817;box-shadow:0 10px 26px rgba(0,215,72,.24)}
+.ce-tournament-page .ce-pro-button-secondary{border-color:#2f5268;background:rgba(9,27,43,.78);color:#ecf7ff}
+.ce-tournament-page .ce-pro-button-secondary:hover{background:#17374e;color:#fff}
+.ce-tournament-page .ce-pro-button-muted{border-color:#375f73;background:#1d3d50;color:#eff7fb}
+.ce-tournament-page .ce-pro-tabs{display:flex;gap:5px;padding:6px;margin:18px 0 20px;overflow-x:auto;border:1px solid #1b3a52;border-radius:11px;background:#0a1a2b;scrollbar-width:thin}
+.ce-tournament-page .ce-pro-tabs a{display:flex;flex:1 0 auto;align-items:center;justify-content:center;min-height:43px;padding:11px 20px;border-radius:7px;color:#c8deec;font-weight:800;font-size:13px;text-align:center;transition:background .18s,color .18s}
+.ce-tournament-page .ce-pro-tabs a:first-child,.ce-tournament-page .ce-pro-tabs a:hover{background:#0868b8;color:#fff}
+.ce-tournament-page .ce-pro-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(285px,340px);align-items:start;gap:18px}
+.ce-tournament-page .ce-pro-primary-column,.ce-tournament-page .ce-pro-side-column{display:grid;gap:18px;min-width:0}
+.ce-tournament-page .ce-pro-panel{min-width:0;padding:clamp(19px,2.3vw,28px);background:linear-gradient(155deg,#0a2135,#091a2b);border:1px solid #24506b;border-radius:13px;box-shadow:0 9px 25px rgba(0,0,0,.09)}
+.ce-tournament-page .ce-pro-panel[id]{scroll-margin-top:30px}
+.ce-tournament-page .ce-pro-panel .ce-pro-overline{margin:0 0 9px;color:#32b7ef;font-size:10px;letter-spacing:.19em;font-weight:900}
+.ce-tournament-page .ce-pro-panel h2{margin:0 0 19px;font-size:clamp(19px,2.3vw,24px);line-height:1.2;color:#fff;font-weight:900}
+.ce-tournament-page .ce-pro-muted,.ce-tournament-page .ce-pro-body-copy{margin:0;color:#d3e3ee;font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.ce-tournament-page .ce-pro-overview-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px 0 0}
+.ce-tournament-page .ce-pro-overview-facts>div{min-width:0;padding:16px;background:#0e2c43;border:1px solid #234964;border-radius:8px}
+.ce-tournament-page .ce-pro-overview-facts dt,.ce-tournament-page .ce-pro-detail-list dt,.ce-tournament-page .ce-pro-key-list dt{margin:0 0 7px;color:#95b8d0;font-size:12px;font-weight:650}
+.ce-tournament-page .ce-pro-overview-facts dd,.ce-tournament-page .ce-pro-detail-list dd{margin:0;color:#fff;font-size:14px;font-weight:800;overflow-wrap:anywhere}
+.ce-tournament-page .ce-pro-detail-list{margin:0}
+.ce-tournament-page .ce-pro-detail-list>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:15px 0;border-bottom:1px solid #244154}
+.ce-tournament-page .ce-pro-detail-list>div:first-child{padding-top:0}
+.ce-tournament-page .ce-pro-detail-list dt{margin:0}
+.ce-tournament-page .ce-pro-footnote{margin:15px 0 0;color:#9bb9cc;font-size:12px;line-height:1.6}
+.ce-tournament-page .ce-pro-register-panel{border-color:#27718d;background:linear-gradient(145deg,#0b293e,#071b2d)}
+.ce-tournament-page .ce-pro-reg-badge{display:inline-flex;align-items:center;gap:8px;width:max-content;max-width:100%;padding:8px 12px;border-radius:7px;border:1px solid #345a73;background:#18364b;color:#d1e3ed;font-size:12px;font-weight:800}
+.ce-tournament-page .ce-pro-reg-badge:before{content:"";width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#7997aa}
+.ce-tournament-page .ce-pro-reg-badge.is-open{color:#9df4b7;border-color:#167c56;background:#0a3d30}
+.ce-tournament-page .ce-pro-reg-badge.is-open:before{background:#00eb62}
+.ce-tournament-page .ce-pro-reg-count{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px;margin:23px 0 9px}
+.ce-tournament-page .ce-pro-reg-count strong{font-size:23px;font-weight:900;color:#fff}
+.ce-tournament-page .ce-pro-reg-count span{color:#9ab9cf;font-size:12px}
+.ce-tournament-page .ce-pro-meter{height:7px;width:100%;background:#17384d;border-radius:20px;overflow:hidden}
+.ce-tournament-page .ce-pro-meter span{display:block;height:100%;background:linear-gradient(90deg,#04b4e5,#00e35a);border-radius:20px;max-width:100%}
+.ce-tournament-page .ce-pro-reg-help{margin:20px 0;color:#cee2ed;font-size:13px;line-height:1.65}
+.ce-tournament-page .ce-pro-button-full{display:flex;width:100%}
+.ce-tournament-page .ce-pro-panel-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;font-size:12px;font-weight:800;color:#6fd3fa}
+.ce-tournament-page .ce-pro-panel-link:hover{color:#d8f6ff;text-decoration:underline}
+.ce-tournament-page .ce-pro-key-list{margin:0}
+.ce-tournament-page .ce-pro-key-list>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid #223e51}
+.ce-tournament-page .ce-pro-key-list>div:first-child{padding-top:0}
+.ce-tournament-page .ce-pro-key-list dt{margin:0}
+.ce-tournament-page .ce-pro-key-list dd{margin:0;color:#fff;font-size:12px;text-align:right;font-weight:800;overflow-wrap:anywhere}
+.ce-tournament-page .ce-pro-return{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:45px;padding:13px;border:1px solid #2c5168;background:#142b3d;border-radius:8px;font-size:12px;font-weight:800;color:#e5f2fc;text-align:center}
+.ce-tournament-page .ce-pro-return:hover{background:#244359;color:white}
+@media(max-width:950px){.ce-tournament-page .ce-pro-layout{grid-template-columns:minmax(0,1fr) minmax(240px,32%);gap:14px}.ce-tournament-page .ce-pro-panel{padding:19px}.ce-tournament-page .ce-pro-overview-facts{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.ce-tournament-page .ce-pro-layout{grid-template-columns:1fr}.ce-tournament-page .ce-pro-side-column{grid-template-columns:1fr}.ce-tournament-page .ce-pro-hero{min-height:405px;padding:28px}.ce-tournament-page .ce-pro-hero-fact{margin-right:18px;padding-right:18px}.ce-tournament-page .ce-pro-hero-wash{background:linear-gradient(0deg,rgba(1,10,20,.98),rgba(1,11,21,.66) 62%,rgba(1,11,21,.25))}}
+@media(max-width:500px){.ce-tournament-page .ce-pro-hero{min-height:430px;padding:23px 18px}.ce-tournament-page .ce-pro-hero h1{font-size:clamp(28px,8vw,40px)}.ce-tournament-page .ce-pro-hero-facts{gap:0}.ce-tournament-page .ce-pro-hero-fact{min-width:44%;margin-right:0;padding:12px 12px 12px 0}.ce-tournament-page .ce-pro-hero-fact:not(:last-child){border-right:0}.ce-tournament-page .ce-pro-hero-actions{flex-direction:column}.ce-tournament-page .ce-pro-hero-actions .ce-pro-button{width:100%}.ce-tournament-page .ce-pro-overview-facts{grid-template-columns:1fr}.ce-tournament-page .ce-pro-detail-list>div{flex-direction:column}.ce-tournament-page .ce-pro-detail-list dd{font-size:13px}.ce-tournament-page .ce-pro-panel{padding:18px}.ce-tournament-page .ce-pro-tabs a{min-width:100px;padding:9px 12px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){.ce-tournament-page .ce-pro-detail a,.ce-tournament-page .ce-pro-detail img{transition:none!important}}

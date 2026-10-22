@@ -1,0 +1,138 @@
+{% extends 'arena/base.html' %}
+{% load static tz %}
+{% block title %}{{ tournament.title }} | CE ARENA{% endblock %}
+{% block description %}View the details, rules, dates, and registration status for {{ tournament.title }} on CE ARENA.{% endblock %}
+{% block metadata %}
+<link rel="stylesheet" href="{% static 'arena/ce-arena-detail-theme.css' %}">
+{% endblock %}
+{% block breadcrumbs %}
+<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="{% url 'arena:tournament_list' %}">Tournaments</a></li><li><a href="{% url 'arena:game_tournaments' tournament.game %}">{{ tournament.game_label }}</a></li><li aria-current="page">{{ tournament.title }}</li></ol></nav>
+{% endblock %}
+{% block content %}
+<div class="ce-pro-detail">
+  {% if preview %}
+  <aside class="ce-pro-preview" aria-label="Organiser preview">
+    <strong>{% if tournament.status == 'draft' %}Draft preview{% else %}Organiser preview{% endif %}</strong>
+    <p>{% if tournament.status == 'draft' %}This tournament has not been published. Registration is unavailable.{% else %}You are previewing this tournament as an organiser.{% endif %}</p>
+  </aside>
+  {% endif %}
+
+  <section class="ce-pro-hero" aria-labelledby="page-title">
+    <div class="ce-pro-hero-art" aria-hidden="true">{% include 'arena/_tournament_artwork.html' %}</div>
+    <div class="ce-pro-hero-wash" aria-hidden="true"></div>
+    <div class="ce-pro-hero-inner">
+      <div class="ce-pro-hero-kicker"><span class="ce-pro-game-pill">{{ tournament.game_label }}</span><span class="ce-pro-kicker-text">CE ARENA TOURNAMENT</span></div>
+      <h1 id="page-title">{{ tournament.title }}</h1>
+      <p class="ce-pro-hero-lead">{{ tournament.format_label|default:'Competition format to be announced' }} · {% if tournament.team_size > 1 %}Teams of {{ tournament.team_size }} players{% else %}Solo competition{% endif %}</p>
+      <div class="ce-pro-hero-facts" aria-label="Tournament highlights">
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">START DATE</span><strong>{% if tournament.start_at %}<time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'j M Y · H:i' }}</time>{% else %}To be announced{% endif %}</strong></div>
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">COMPETITION</span><strong>{% if tournament.team_size > 1 %}{{ tournament.team_size }}-player teams{% else %}Individual players{% endif %}</strong></div>
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">CAPACITY</span><strong>{% if tournament.capacity %}{{ tournament.capacity }} {% if tournament.team_size > 1 %}teams{% else %}players{% endif %}{% else %}To be announced{% endif %}</strong></div>
+      </div>
+      <div class="ce-pro-hero-actions">
+        {% if tournament.registration_is_open and spots_left > 0 %}
+          <a class="ce-pro-button ce-pro-button-primary" href="{% url 'arena:register' tournament.pk %}">{% if tournament.team_size > 1 %}REGISTER YOUR TEAM{% else %}REGISTER NOW{% endif %} <span aria-hidden="true">→</span></a>
+        {% else %}
+          <a class="ce-pro-button ce-pro-button-muted" href="{% url 'arena:tournament_registration' tournament.pk %}">VIEW REGISTRATION STATUS <span aria-hidden="true">↓</span></a>
+        {% endif %}
+        <a class="ce-pro-button ce-pro-button-secondary" href="{% url 'arena:tournament_list' %}">← BACK TO TOURNAMENTS</a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="ce-pro-tabs" aria-label="Tournament pages">
+    <a aria-current="page" href="{% url 'arena:tournament_detail' tournament.pk %}">Overview</a>
+    <a href="{% url 'arena:tournament_rules' tournament.pk %}">Rules</a>
+    <a href="{% url 'arena:tournament_schedule' tournament.pk %}">Schedule</a>
+    <a href="{% url 'arena:tournament_prizes' tournament.pk %}">Prizes</a>
+    <a href="{% url 'arena:tournament_registration' tournament.pk %}">Registration</a>
+  </nav>
+
+  <div class="ce-pro-layout">
+    <div class="ce-pro-primary-column">
+      <section class="ce-pro-panel" id="overview" aria-labelledby="overview-heading">
+        <p class="ce-pro-overline">THE COMPETITION</p>
+        <h2 id="overview-heading">About this tournament</h2>
+        <p class="ce-pro-muted">Review the event details before entering. Tournament information is provided by CE ARENA organisers.</p>
+        <dl class="ce-pro-overview-facts">
+          <div><dt>Game</dt><dd>{{ tournament.game_label }}</dd></div>
+          <div><dt>Format</dt><dd>{{ tournament.format_label|default:'Not set yet' }}</dd></div>
+          <div><dt>Entry type</dt><dd>{% if tournament.team_size > 1 %}Team of {{ tournament.team_size }} players{% else %}Solo / individual{% endif %}</dd></div>
+          <div><dt>Capacity</dt><dd>{% if tournament.capacity %}{{ tournament.capacity }} {% if tournament.team_size > 1 %}teams{% else %}players{% endif %}{% else %}Not set yet{% endif %}</dd></div>
+        </dl>
+      </section>
+
+      <section class="ce-pro-panel" id="rules" aria-labelledby="rules-heading">
+        <p class="ce-pro-overline">FAIR PLAY STARTS HERE</p>
+        <h2 id="rules-heading">Competition rules</h2>
+        <div class="ce-pro-body-copy">{{ tournament.rules|default:'The organiser has not published the competition rules yet.'|linebreaksbr }}</div>
+      </section>
+
+      <section class="ce-pro-panel" id="schedule" aria-labelledby="schedule-heading">
+        <p class="ce-pro-overline">MARK YOUR CALENDAR</p>
+        <h2 id="schedule-heading">Important dates</h2>
+        <dl class="ce-pro-detail-list">
+          <div><dt>Tournament begins</dt><dd>{% if tournament.start_at %}<time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'l, j F Y · H:i' }}</time>{% else %}To be announced{% endif %}</dd></div>
+          <div><dt>Registration closes</dt><dd>{% if tournament.registration_deadline %}<time datetime="{{ tournament.registration_deadline|date:'c' }}">{{ tournament.registration_deadline|localtime|date:'l, j F Y · H:i' }}</time>{% else %}To be announced{% endif %}</dd></div>
+        </dl>
+        <p class="ce-pro-footnote">All times are shown in {{ timezone_label|default:'Africa/Douala (UTC+1)' }}. Additional match scheduling will be announced by the organiser.</p>
+      </section>
+
+      <section class="ce-pro-panel" id="prizes" aria-labelledby="prizes-heading">
+        <p class="ce-pro-overline">THE REWARDS</p>
+        <h2 id="prizes-heading">Prizes</h2>
+        <div class="ce-pro-body-copy">{% if tournament.prize_details %}{{ tournament.prize_details|linebreaksbr }}{% else %}Prizes have not been announced.{% endif %}</div>
+      </section>
+
+      <section class="ce-pro-panel" id="entry-terms" aria-labelledby="terms-heading">
+        <p class="ce-pro-overline">BEFORE YOU ENTER</p>
+        <h2 id="terms-heading">Entry terms</h2>
+        <div class="ce-pro-body-copy">{{ tournament.entry_terms|default:'Entry terms have not been announced.'|linebreaksbr }}</div>
+      </section>
+    </div>
+
+    <aside class="ce-pro-side-column" aria-label="Tournament registration and key information">
+      <section class="ce-pro-panel ce-pro-register-panel" id="registration" aria-labelledby="registration-heading">
+        <p class="ce-pro-overline">JOIN THE COMPETITION</p>
+        <h2 id="registration-heading">Registration</h2>
+        <div class="ce-pro-reg-badge{% if tournament.registration_is_open and spots_left > 0 %} is-open{% endif %}">
+          {% if tournament.status == 'draft' %}Draft · not published{% elif tournament.status == 'completed' %}Tournament completed{% elif tournament.registration_is_open and spots_left > 0 %}Registration open{% elif spots_left == 0 %}All places reserved{% else %}Registration closed{% endif %}
+        </div>
+        {% if tournament.capacity %}
+        <div class="ce-pro-reg-count"><strong>{{ active_entry_count }} / {{ tournament.capacity }}</strong><span>entries reserved</span></div>
+        <div class="ce-pro-meter" aria-hidden="true"><span style="width:{% widthratio active_entry_count tournament.capacity 100 %}%"></span></div>
+        {% endif %}
+        {% if tournament.registration_is_open and spots_left > 0 %}
+          <p class="ce-pro-reg-help">{{ spots_left }} place{{ spots_left|pluralize }} available. {% if tournament.team_size > 1 %}One entry represents a team of {{ tournament.team_size }} players.{% else %}One entry represents one player.{% endif %}</p>
+          <a class="ce-pro-button ce-pro-button-primary ce-pro-button-full" href="{% url 'arena:register' tournament.pk %}">{% if tournament.team_size > 1 %}REGISTER YOUR TEAM{% else %}REGISTER NOW{% endif %} <span aria-hidden="true">→</span></a>
+          <p class="ce-pro-footnote">Entries remain pending until approved by a CE ARENA organiser.</p>
+        {% elif tournament.status == 'draft' %}
+          <p class="ce-pro-reg-help">This tournament is not yet published. Registration is unavailable.</p>
+        {% elif tournament.status == 'completed' %}
+          <p class="ce-pro-reg-help">This tournament has finished and no longer accepts entries.</p>
+        {% elif spots_left == 0 %}
+          <p class="ce-pro-reg-help">No places are available at the moment.</p>
+        {% else %}
+          <p class="ce-pro-reg-help">This tournament is currently not accepting registrations.</p>
+        {% endif %}
+        <a class="ce-pro-panel-link" href="{% url 'arena:tournament_rules' tournament.pk %}">Read competition rules <span aria-hidden="true">↗</span></a>
+      </section>
+
+      <section class="ce-pro-panel ce-pro-key-panel" aria-labelledby="key-heading">
+        <p class="ce-pro-overline">AT A GLANCE</p>
+        <h2 id="key-heading">Key information</h2>
+        <dl class="ce-pro-key-list">
+          <div><dt>Game</dt><dd>{{ tournament.game_label }}</dd></div>
+          <div><dt>Format</dt><dd>{{ tournament.format_label|default:'Not set yet' }}</dd></div>
+          <div><dt>Entry size</dt><dd>{% if tournament.team_size > 1 %}{{ tournament.team_size }} players / team{% else %}Solo{% endif %}</dd></div>
+          <div><dt>Start</dt><dd>{% if tournament.start_at %}{{ tournament.start_at|localtime|date:'j M Y' }}{% else %}TBA{% endif %}</dd></div>
+          <div><dt>Deadline</dt><dd>{% if tournament.registration_deadline %}{{ tournament.registration_deadline|localtime|date:'j M Y' }}{% else %}TBA{% endif %}</dd></div>
+          <div><dt>Capacity</dt><dd>{{ tournament.capacity|default:'TBA' }}</dd></div>
+        </dl>
+        <p class="ce-pro-footnote">Times shown in {{ timezone_label|default:'Africa/Douala (UTC+1)' }}.</p>
+      </section>
+      <a class="ce-pro-return" href="{% url 'arena:game_tournaments' tournament.game %}"><span aria-hidden="true">←</span> More {{ tournament.game_label }} tournaments</a>
+    </aside>
+  </div>
+</div>
+{% endblock %}

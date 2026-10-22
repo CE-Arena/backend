@@ -1,0 +1,12 @@
+{% extends 'arena/base.html' %}
+{% block title %}{{ title|default:'Registration unavailable' }} | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}
+<section class="ce-tournament-narrow ce-tournament-state-page" aria-labelledby="page-title">
+  <p class="ce-tournament-eyebrow">CE ARENA</p>
+  <h1 id="page-title">{{ title|default:'Registration unavailable' }}</h1>
+  <p class="ce-tournament-lead">{{ message|default:'This tournament is not accepting registrations at the moment.' }}</p>
+  {% if tournament %}<p class="ce-tournament-state-detail">{{ tournament.title }}</p>{% endif %}
+  <div class="ce-tournament-actions">{% if tournament %}<a class="ce-tournament-button ce-tournament-button-primary" href="{% url 'arena:tournament_detail' tournament.pk %}">Check tournament details <span aria-hidden="true">→</span></a>{% endif %}<a class="ce-tournament-button ce-tournament-button-secondary" href="{% url 'arena:tournament_list' %}">Explore tournaments</a></div>
+</section>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'arena/base.html' %}
+{% load tz %}
+{% block title %}Registration status | CE ARENA{% endblock %}
+{% block description %}Your private CE ARENA tournament registration status.{% endblock %}
+{% block referrer_policy %}no-referrer{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow, noarchive">{% endblock %}
+{% block breadcrumbs %}
+<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="{% url 'arena:tournament_list' %}">Tournaments</a></li><li><a href="{% url 'arena:tournament_detail' entry.tournament.pk %}">{{ entry.tournament.title }}</a></li><li aria-current="page">Registration status</li></ol></nav>
+{% endblock %}
+{% block content %}
+<div class="ce-tournament-narrow">
+  <section class="ce-tournament-intro ce-tournament-intro-detail" aria-labelledby="page-title">
+    <p class="ce-tournament-eyebrow">Your registration</p>
+    <h1 id="page-title">{% if entry.status == 'approved' %}Entry<br><span>approved.</span>{% elif entry.status == 'rejected' %}Your entry<br>was not approved.{% else %}Entry received.<br><span>Review pending.</span>{% endif %}</h1>
+    <p class="ce-tournament-lead">{% if entry.status == 'approved' %}A CE ARENA organiser has approved your entry. Review the tournament details and rules before the event.{% elif entry.status == 'rejected' %}A CE ARENA organiser has reviewed your entry and has not approved it for this tournament.{% else %}Your registration was saved successfully. It is awaiting review by a CE ARENA organiser and is not yet confirmed.{% endif %}</p>
+  </section>
+  <section class="ce-tournament-panel" aria-labelledby="receipt-title">
+    <div class="ce-tournament-section-heading"><h2 id="receipt-title">Current registration status</h2><span class="ce-tournament-badge{% if entry.status == 'approved' %} ce-tournament-badge-open{% elif entry.status == 'rejected' %} ce-tournament-badge-rejected{% else %} ce-tournament-badge-pending{% endif %}">{{ entry.get_status_display }}</span></div>
+    <dl class="ce-tournament-details">
+      <div><dt>Tournament</dt><dd>{{ entry.tournament.title }}</dd></div>
+      <div><dt>{% if entry.tournament.team_size > 1 %}Captain’s gaming name{% else %}Gaming name{% endif %}</dt><dd>{{ entry.gaming_name }}</dd></div>
+      <div><dt>Submitted</dt><dd><time datetime="{{ entry.created_at|date:'c' }}">{{ entry.created_at|localtime|date:'j M Y · H:i' }}</time><span class="ce-tournament-inline-note">{{ timezone_label|default:'Africa/Douala (UTC+1)' }}</span></dd></div>
+      <div><dt>Registration reference</dt><dd class="ce-tournament-token">{{ entry.reference }}</dd></div>
+    </dl>
+  </section>
+  <section class="ce-tournament-notice ce-tournament-private-notice" aria-labelledby="private-title">
+    <h2 id="private-title">Bookmark this private status page.</h2>
+    <p>This is your link for checking registration status. Anyone who has the link can see the gaming name and status shown here, so keep it private.</p>
+    <a class="ce-tournament-text-link" href="{% url 'arena:receipt' entry.token %}">Your private status link <span aria-hidden="true">↗</span></a>
+  </section>
+  <div class="ce-tournament-actions"><a class="ce-tournament-button ce-tournament-button-primary" href="{% url 'arena:tournament_detail' entry.tournament.pk %}">View tournament <span aria-hidden="true">→</span></a><a class="ce-tournament-button ce-tournament-button-secondary" href="{% url 'arena:tournament_list' %}">Explore tournaments</a></div>
+</div>
+{% endblock %}

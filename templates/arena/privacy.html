@@ -1,0 +1,16 @@
+{% extends 'arena/base.html' %}
+{% block title %}Registration privacy | CE ARENA{% endblock %}
+{% block description %}How CE ARENA uses the player and team information submitted for tournament registration.{% endblock %}
+{% block breadcrumbs %}<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="{% url 'arena:tournament_list' %}">Tournaments</a></li><li aria-current="page">Registration privacy</li></ol></nav>{% endblock %}
+{% block content %}
+<div class="ce-tournament-narrow">
+  <section class="ce-tournament-intro ce-tournament-intro-detail" aria-labelledby="page-title"><p class="ce-tournament-eyebrow">Your registration details</p><h1 id="page-title">Registration<br><span>privacy.</span></h1><p class="ce-tournament-lead">The information you submit is used by CE ARENA organisers to review and manage tournament entries.</p></section>
+  <div class="ce-tournament-panel ce-tournament-privacy-copy">
+    <section aria-labelledby="collected-title"><h2 id="collected-title">What the form collects</h2><p>Registration asks for your gaming name and in-game player ID. Team entries also include the team name and the gaming names and player IDs of the other team members. CE ARENA records the tournament, submission time, registration status, and your acceptance of the competition rules.</p><p>The form does not collect game passwords, email addresses, or payment details.</p></section>
+    <section aria-labelledby="use-title"><h2 id="use-title">How your information is used</h2><p>Registration records are saved on the CE ARENA server so authorised organisers can review entries, check the submitted roster, and manage participation. Submitting a player ID does not verify the game account with a game publisher.</p></section>
+    <section aria-labelledby="visibility-title"><h2 id="visibility-title">Who can see it</h2><p>Public tournament pages do not list player IDs or team rosters. Your private registration link shows your gaming name, tournament, submission time, reference, and current status. Anyone holding that link can view those details. Keep the link private.</p></section>
+    <section aria-labelledby="team-title"><h2 id="team-title">Registering a team</h2><p>Submit a teammate’s gaming name and player ID only with their agreement, and check that each detail is correct before submitting.</p></section>
+  </div>
+  <a class="ce-tournament-back-link" href="{% url 'arena:tournament_list' %}"><span aria-hidden="true">←</span> Back to tournaments</a>
+</div>
+{% endblock %}

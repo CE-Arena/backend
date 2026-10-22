@@ -1,0 +1,20 @@
+{% load static %}
+<div class="ce-tournament-artwork">
+{% if tournament.game == "free-fire" %}
+  <img src="{% static 'arena/tournament-artwork/free-fire.webp' %}" alt="Free Fire tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "dls" %}
+  <img src="{% static 'arena/tournament-artwork/dls.webp' %}" alt="Dream League Soccer tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "pubg-mobile" %}
+  <img src="{% static 'arena/tournament-artwork/pubg-mobile.webp' %}" alt="PUBG Mobile tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "cod-mobile" %}
+  <img src="{% static 'arena/tournament-artwork/cod-mobile.webp' %}" alt="Call of Duty Mobile tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "efootball" %}
+  <img src="{% static 'arena/tournament-artwork/efootball.webp' %}" alt="eFootball tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "mobile-legends" %}
+  <img src="{% static 'arena/tournament-artwork/mobile-legends.webp' %}" alt="Mobile Legends: Bang Bang tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "ea-sports-fc" %}
+  <img src="{% static 'arena/tournament-artwork/ea-sports-fc.webp' %}" alt="EA SPORTS FC tournament artwork" loading="lazy" decoding="async">
+{% elif tournament.game == "valorant" %}
+  <img src="{% static 'arena/tournament-artwork/valorant.webp' %}" alt="Valorant tournament artwork" loading="lazy" decoding="async">
+{% endif %}
+</div>

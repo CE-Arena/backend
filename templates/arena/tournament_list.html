@@ -1,0 +1,76 @@
+{% extends 'arena/base.html' %}
+{% load tz %}
+
+{% block title %}{% if selected_game %}{{ selected_game.name }} Tournaments{% else %}Tournaments{% endif %} | CE ARENA{% endblock %}
+
+{% block breadcrumbs %}
+<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    <li aria-current="page">Tournaments{% if selected_game %} · {{ selected_game.name }}{% endif %}</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="ce-tournament-intro ce-directory-hero" aria-labelledby="page-title">
+  <p class="ce-tournament-eyebrow">PLAY · COMPETE · CONNECT</p>
+  <h1 id="page-title">{% if selected_game %}{{ selected_game.name }} <span>TOURNAMENTS</span>{% else %}TOURNAMENTS{% endif %}</h1>
+  <p class="ce-tournament-lead">Find your game. Join the competition. Be part of the community.</p>
+</section>
+
+<nav class="ce-tournament-filters ce-directory-filters" aria-label="Filter tournaments by game">
+  <ul>
+    <li><a href="{% url 'arena:tournament_list' %}"{% if not selected_game %} aria-current="page"{% endif %}><span class="ce-filter-icon" aria-hidden="true">✦</span> All Games</a></li>
+    {% for game_slug, game_name in games %}
+    <li><a href="{% url 'arena:game_tournaments' game_slug %}"{% if selected_game.slug == game_slug %} aria-current="page"{% endif %}><span class="ce-filter-icon" aria-hidden="true">{{ game_name|slice:':2'|upper }}</span> {{ game_name }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<section class="ce-tournament-section ce-directory-section" aria-labelledby="announced-title">
+  <div class="ce-tournament-section-heading ce-directory-section-heading">
+    <h2 id="announced-title">Explore Tournaments</h2>
+    <p class="ce-tournament-timezone">Times shown in {{ timezone_label|default:'Africa/Douala (UTC+1)' }}.</p>
+  </div>
+
+  {% if tournaments %}
+  <div class="ce-tournament-grid ce-directory-grid">
+    {% for tournament in tournaments %}
+    {% with active_count=tournament.active_entry_count %}
+    <a class="ce-tournament-event-card ce-directory-card" href="{% url 'arena:tournament_detail' tournament.pk %}" aria-label="View tournament: {{ tournament.title }}">
+      <div class="ce-directory-card-art">
+        {% include 'arena/_tournament_artwork.html' %}
+        <span class="ce-directory-art-game">{{ tournament.game_label }}</span>
+      </div>
+      <div class="ce-directory-card-inner">
+        <h3>{{ tournament.title }}</h3>
+        <div class="ce-directory-quickfacts">
+          <span class="ce-directory-meta-item"><span aria-hidden="true">◷</span> {% if tournament.start_at %}<time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'j M Y' }}</time>{% else %}Date to be announced{% endif %}</span>
+          <span class="ce-directory-meta-item"><span aria-hidden="true">♟</span> {% if tournament.team_size > 1 %}{{ tournament.team_size }}v{{ tournament.team_size }}{% else %}Solo{% endif %}</span>
+          {% if tournament.prize_details %}<span class="ce-directory-meta-item"><span aria-hidden="true">🏆</span> {{ tournament.prize_details|striptags|truncatechars:34 }}</span>{% endif %}
+          {% if tournament.format_label %}<span class="ce-directory-meta-item"><span aria-hidden="true">⚑</span> {{ tournament.format_label }}</span>{% endif %}
+        </div>
+        <div class="ce-directory-entry-line">
+          <span class="ce-tournament-badge{% if tournament.registration_is_open and active_count < tournament.capacity %} ce-tournament-badge-open{% endif %}">
+            {% if tournament.registration_is_open %}{% if active_count >= tournament.capacity %}Full{% else %}Registration Open{% endif %}{% elif tournament.status == 'completed' %}Completed{% else %}Registration Closed{% endif %}
+          </span>
+          <span class="ce-directory-capacity">{{ active_count }} / {{ tournament.capacity }} reserved</span>
+        </div>
+        <span class="ce-tournament-card-action ce-directory-card-action">VIEW TOURNAMENT <span aria-hidden="true">→</span></span>
+      </div>
+    </a>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="ce-tournament-empty">
+    <div>
+      <h3>No tournaments announced yet</h3>
+      <p>{% if selected_game %}Competitions for {{ selected_game.name }} will appear here when announced.{% else %}New CE ARENA competitions will appear here.{% endif %}</p>
+      <a class="ce-tournament-text-link" href="/pages/games.html">Explore our games →</a>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

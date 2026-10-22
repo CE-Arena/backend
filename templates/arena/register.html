@@ -1,0 +1,81 @@
+{% extends 'arena/base.html' %}
+{% load tz %}
+{% block title %}Register · {{ tournament.title }} | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block breadcrumbs %}
+<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="{% url 'arena:tournament_list' %}">Tournaments</a></li><li><a href="{% url 'arena:tournament_detail' tournament.pk %}">{{ tournament.title }}</a></li><li aria-current="page">Register</li></ol></nav>
+{% endblock %}
+{% block content %}
+<section class="ce-tournament-intro ce-tournament-intro-detail" aria-labelledby="page-title">
+  <p class="ce-tournament-eyebrow">{{ tournament.game_label }} · Registration</p>
+  <h1 id="page-title">{% if tournament.team_size > 1 %}Bring your team.<br><span>Enter the arena.</span>{% else %}Your next challenge<br><span>starts here.</span>{% endif %}</h1>
+  <p class="ce-tournament-lead">Register for <strong>{{ tournament.title }}</strong>. Your entry will be reviewed by a CE ARENA organiser.</p>
+</section>
+<div class="ce-tournament-layout">
+  <form class="ce-tournament-form" method="post" action="{% url 'arena:register' tournament.pk %}">
+    {% csrf_token %}
+    {{ roster.management_form }}
+    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+    {% if not form.website.is_hidden %}<div class="ce-tournament-trap" aria-hidden="true">{{ form.website.label_tag }}{{ form.website }}</div>{% endif %}
+    {% if form.errors or roster.total_error_count %}
+    <div class="ce-tournament-error-summary" role="alert" aria-labelledby="error-summary-title">
+      <h2 id="error-summary-title">Please check your registration.</h2>
+      <p>Your entry has not been submitted. Correct the details below and try again.</p>
+      <ul>
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        {% for field in form %}{% if field.errors %}{% if field.name == 'website' or field.is_hidden %}{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}{% else %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ field.errors|striptags }}</a></li>{% endif %}{% endif %}{% endfor %}
+        {% for error in roster.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+        {% for player_form in roster %}{% for field in player_form %}{% if field.errors %}<li><a href="#{{ field.id_for_label }}">Player {{ forloop.parentloop.counter|add:'1' }} · {{ field.label }}: {{ field.errors|striptags }}</a></li>{% endif %}{% endfor %}{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <fieldset class="ce-tournament-form-panel">
+      <legend>{% if tournament.team_size > 1 %}Team &amp; captain{% else %}Player details{% endif %}</legend>
+      <p class="ce-tournament-form-intro">{% if tournament.team_size > 1 %}You are player 1 of this {{ tournament.team_size }}-player team. Enter your team name and your own in-game details first.{% else %}Use the gaming name and player ID shown in your {{ tournament.game_label }} account.{% endif %}</p>
+      <div class="ce-tournament-form-fields">
+        {% for field in form.visible_fields %}
+          {% if field.name != 'rules_accepted' and field.name != 'website' %}
+            {% if field.name != 'team_name' or tournament.team_size > 1 %}{% include 'arena/_field.html' with field=field %}{% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% if tournament.team_size > 1 %}
+      {% for player_form in roster %}
+      <fieldset class="ce-tournament-form-panel">
+        <legend>Player {{ forloop.counter|add:'1' }}</legend>
+        {% for field in player_form.hidden_fields %}{{ field }}{% endfor %}
+        {% if player_form.non_field_errors %}<ul class="ce-tournament-field-errors">{% for error in player_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        <div class="ce-tournament-form-fields">{% for field in player_form.visible_fields %}{% include 'arena/_field.html' with field=field %}{% endfor %}</div>
+      </fieldset>
+      {% endfor %}
+      <p class="ce-tournament-small ce-tournament-roster-note">Check that every teammate has agreed to take part and that each player ID is correct.</p>
+    {% endif %}
+    <section class="ce-tournament-panel ce-tournament-confirm-panel" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Review &amp; submit</h2>
+      <div class="ce-tournament-checkbox{% if form.rules_accepted.errors %} ce-tournament-field-invalid{% endif %}">
+        {{ form.rules_accepted }}
+        <label for="{{ form.rules_accepted.id_for_label }}">I have read and agree to this tournament’s published rules and entry terms. <span class="ce-tournament-required">(required)</span></label>
+      </div>
+      {% if form.rules_accepted.errors %}<ul id="{{ form.rules_accepted.auto_id }}_error" class="ce-tournament-field-errors">{% for error in form.rules_accepted.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+      <p class="ce-tournament-small"><a href="{% url 'arena:tournament_detail' tournament.pk %}#rules" target="_blank" rel="noopener">Read the competition rules<span class="ce-tournament-sr-only"> (opens in a new tab)</span></a> and <a href="{% url 'arena:privacy' %}" target="_blank" rel="noopener">how your registration details are used<span class="ce-tournament-sr-only"> (opens in a new tab)</span></a>.</p>
+      <button class="ce-tournament-button ce-tournament-button-primary" type="submit">Submit registration <span aria-hidden="true">→</span></button>
+      <p class="ce-tournament-small ce-tournament-submit-note">Submission creates a pending entry. A place is confirmed only when an organiser approves it.</p>
+    </section>
+  </form>
+  <aside class="ce-tournament-sidebar" aria-labelledby="event-summary-title">
+    <div class="ce-tournament-panel ce-tournament-summary-panel">
+      <p class="ce-tournament-eyebrow">Your competition</p><h2 id="event-summary-title">{{ tournament.title }}</h2>
+      <dl class="ce-tournament-details ce-tournament-details-single">
+        <div><dt>Game</dt><dd>{{ tournament.game_label }}</dd></div>
+        <div><dt>Format</dt><dd>{{ tournament.format_label }}</dd></div>
+        <div><dt>Starts</dt><dd><time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'j M Y · H:i' }}</time></dd></div>
+        <div><dt>Registration deadline</dt><dd><time datetime="{{ tournament.registration_deadline|date:'c' }}">{{ tournament.registration_deadline|localtime|date:'j M Y · H:i' }}</time></dd></div>
+        <div><dt>Entry terms</dt><dd class="ce-tournament-prose">{{ tournament.entry_terms|linebreaksbr }}</dd></div>
+      </dl>
+      <p class="ce-tournament-timezone">{{ timezone_label|default:'Africa/Douala (UTC+1)' }}</p>
+    </div>
+    <div class="ce-tournament-notice"><h3>Keep your status link.</h3><p>After submitting, bookmark your private registration page. Return to that page to check whether your entry has been approved.</p></div>
+  </aside>
+</div>
+{% endblock %}

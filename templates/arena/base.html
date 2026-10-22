@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="ce-tournament-document">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block description %}Explore CE ARENA tournaments, read the competition rules, and register your player or team.{% endblock %}">
+  <meta name="referrer" content="{% block referrer_policy %}same-origin{% endblock %}">
+  {% block metadata %}{% endblock %}
+  <title>{% block title %}Tournaments | CE ARENA{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'arena/tournaments.css' %}">
+<link rel="stylesheet" href="/arena-assets/arena/ce-arena-directory-theme.css">
+</head>
+<body class="ce-tournament-page">
+  <a class="ce-tournament-skip" href="#main-content">Skip to content</a>
+  <header class="ce-tournament-header">
+    <a class="ce-tournament-brand" href="/" aria-label="CE ARENA home"><img src="/images/branding/ce-arena-horizontal.png" alt="CE ARENA" width="240"></a>
+    <nav class="ce-tournament-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/pages/games.html">Games</a>
+      <a class="ce-tournament-nav-current" href="{% url 'arena:tournament_list' %}">Tournaments</a>
+      <a href="/pages/about.html">About CE ARENA</a>
+    </nav>
+  </header>
+  <main id="main-content" class="ce-tournament-shell" tabindex="-1">
+    {% block breadcrumbs %}{% endblock %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="ce-tournament-footer">
+    <p>© {% now 'Y' %} CE ARENA. Play. Compete. Connect.</p>
+    <a href="{% url 'arena:privacy' %}">Registration privacy</a>
+  </footer>
+</body>
+</html>

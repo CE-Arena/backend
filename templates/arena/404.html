@@ -1,0 +1,10 @@
+{% extends 'arena/base.html' %}
+{% block title %}Page not found | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}
+<section class="ce-tournament-narrow ce-tournament-state-page" aria-labelledby="page-title">
+  <p class="ce-tournament-eyebrow">404 · Page not found</p><h1 id="page-title">This page<br>is out of play.</h1>
+  <p class="ce-tournament-lead">The page may have moved, or the link may be incorrect. Check the address or explore the available tournaments.</p>
+  <div class="ce-tournament-actions"><a class="ce-tournament-button ce-tournament-button-primary" href="{% url 'arena:tournament_list' %}">Explore tournaments <span aria-hidden="true">→</span></a><a class="ce-tournament-button ce-tournament-button-secondary" href="/">Back to home</a></div>
+</section>
+{% endblock %}

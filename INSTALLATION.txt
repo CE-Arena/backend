@@ -1,0 +1,248 @@
+CE ARENA — TOURNAMENT REGISTRATION
+Prepared 11 October 2026 for the existing Ubuntu/Nginx site.
+
+WHAT THIS RELEASE DOES
+
+Players can browse real tournament announcements, read the rules, register
+as an individual or a fixed-size team, and keep a private link that shows
+whether their entry is awaiting approval, approved, or not approved.
+An entry is saved in SQLite before a receipt is shown. Pending and approved
+entries reserve places. Rejected entries free a place; their player IDs
+remain associated with that event until the organizer deletes the entry.
+Repeated submission of the same form returns its existing receipt.
+
+The private Django management area supports creating, previewing and
+publishing tournaments, closing registration, reviewing entries, and
+approving or rejecting them. It records who changed an entry's status.
+The first Free Fire tournament is a private draft. No real tournament dates,
+format, capacity, fees, prizes or competition rules have been invented.
+
+There is no player-account signup, email delivery, payment processing,
+game-account verification or tournament-results system in this release.
+An organizer must publish instructions for match communication in the rules.
+Players are told to bookmark their private status link and keep it private.
+
+EXISTING WEBSITE
+
+Site: /home/ubuntu/ce-arena
+Backend: /home/ubuntu/ce-arena-backend
+Existing /api/ proxy: 127.0.0.1:3000 (preserved)
+New backend: 127.0.0.1:8011 (loopback only)
+Nginx configuration: /etc/nginx/sites-available/ce-arena
+Public address: 13.51.56.236
+Time zone: Africa/Douala (UTC+1)
+
+The homepage, logo, images, styles and existing game-card links are preserved.
+Activation changes only the tournament invitation and tournament links on
+the eight game detail pages, adds HTTPS and new Nginx routes, and installs
+the registration stylesheet and Django management assets in /arena-assets/.
+
+1. DOWNLOAD AND UPLOAD — WINDOWS GIT BASH
+
+Download ce_arena_registration.py from the chat to your Downloads folder.
+Run the following on your Windows computer, not inside the Ubuntu SSH session:
+
+scp -i ~/Downloads/project-key.pem ~/Downloads/ce_arena_registration.py ubuntu@13.51.56.236:/home/ubuntu/
+
+Use the same SSH key path that already works for your server. Do not paste
+the key contents, your new admin password, or config.json into chat.
+
+2. PREPARE — UBUNTU SERVER TERMINAL
+
+The virtual environment at ~/ce-arena-backend/.venv is already ready.
+Run the installer as ubuntu, without putting sudo before python3:
+
+python3 ~/ce_arena_registration.py --site ~/ce-arena --check &&
+python3 ~/ce_arena_registration.py --site ~/ce-arena --prepare
+
+The installer uses sudo only for the required systemd commands and service
+file. It installs supported Django 5.2 and Gunicorn packages into the private
+virtual environment. It runs the included 39 behavioral tests in an isolated
+file-backed test database on your actual Python version. It verifies the
+generated service with systemd-analyze before database migrations, checks
+production settings, applies migrations, creates the private draft, collects static
+assets, starts the systemd service and verifies its health response.
+
+Expected final message:
+PREPARED: the registration backend passed its loopback health check.
+
+Preparation does not change Nginx or public game-page HTML. If it stops,
+save the STOPPED message and the final relevant error lines. The terminal
+gives a private backup/recovery path. Do not blindly repeat with sudo.
+
+3. CREATE YOUR MANAGEMENT ACCOUNT — UBUNTU SERVER TERMINAL
+
+~/ce-arena-backend/.venv/bin/python ~/ce-arena-backend/app/manage.py createsuperuser
+
+Choose your own username and password in the terminal. The password is
+entered without visible characters and must pass Django's checks (at least
+12 characters, not a common password, and not entirely numeric). Keep it
+private. Do not override the validation prompt with a weak password.
+
+4. INSTALL CERTBOT — UBUNTU SERVER TERMINAL
+
+This server currently serves HTTP. Let's Encrypt supports certificates for
+public IP addresses; a domain is not required. The IP certificate requires
+Certbot 5.4 or later and the shortlived profile.
+
+Use the maintained Certbot snap separately from the application environment.
+If snap is missing, install it first with:
+
+sudo apt install -y snapd
+
+If Certbot is not installed through Snap:
+
+sudo snap install --classic certbot
+
+If the Certbot snap already exists instead:
+
+sudo snap refresh certbot
+
+Then check the version:
+
+sudo /snap/bin/certbot --version
+
+5. REQUEST THE IP CERTIFICATE — UBUNTU SERVER TERMINAL
+
+Port 80 already works for the website and must remain reachable for renewal.
+Allow inbound HTTPS TCP 443 in this EC2 instance's security group. If a host
+firewall is enabled, permit HTTPS there as well. Keep the existing SSH rule.
+Do not open port 8011 to the public; it is intentionally loopback-only.
+
+First test certificate validation without saving a staging certificate:
+
+sudo /snap/bin/certbot certonly --dry-run --webroot --webroot-path /home/ubuntu/ce-arena --preferred-profile shortlived --ip-address 13.51.56.236 --cert-name ce-arena
+
+Answer Certbot's account, email and agreement prompts locally. No agreement
+is automatically accepted by the installer. If validation fails, stop here
+and use the error output to diagnose it; do not activate an untrusted cert.
+
+After the dry run succeeds, obtain the trusted certificate:
+
+sudo /snap/bin/certbot certonly --webroot --webroot-path /home/ubuntu/ce-arena --preferred-profile shortlived --ip-address 13.51.56.236 --cert-name ce-arena --deploy-hook 'nginx -t && systemctl reload nginx'
+
+The deploy hook checks Nginx and reloads it after successful renewals. The
+certificate and private key stay under /etc/letsencrypt/live/ce-arena/.
+The application does not need to read the TLS private key.
+
+6. ACTIVATE HTTPS AND TOURNAMENT LINKS — UBUNTU SERVER TERMINAL
+
+python3 ~/ce_arena_registration.py --site ~/ce-arena --activate
+
+Activation requires the prepared backend and a trusted certificate matching
+13.51.56.236. It checks the original Nginx vhost against the configuration
+you supplied, preserves the /api/ proxy, adds the HTTPS listener and new
+routes, runs nginx -t, reloads Nginx, and checks a real local HTTPS request.
+Only after that check succeeds are the eight game pages connected.
+
+If an unknown configuration change or an additional HTTPS listener is found,
+the installer stops for review rather than replacing that configuration.
+Interrupted or failed activation rolls back the changed Nginx, game-page
+and installer-manifest files. An unchanged activation can be rerun safely.
+
+Public tournaments: https://13.51.56.236/tournaments/
+Free Fire: https://13.51.56.236/tournaments/game/free-fire/
+Private management: https://13.51.56.236/arena-admin/
+
+The existing HTTP static site and /api/ continue to work. Registration and
+management routes require HTTPS and redirect HTTP requests before showing
+forms. This release does not force an unrelated change to old API clients.
+
+7. VERIFY RENEWAL AND OPEN THE WEBSITE
+
+IP certificates last approximately six days. Confirm the automatic renewal
+timer is scheduled and test renewal, including the Nginx reload hook:
+
+systemctl list-timers --all --no-pager 'snap.certbot.renew.timer'
+sudo /snap/bin/certbot renew --cert-name ce-arena --dry-run --run-deploy-hooks
+
+Do not add a second timer if the Snap renewal timer is already active. A
+successful issuance alone is not proof that future renewal is configured.
+
+Open the HTTPS site from your own browser. The installer's local TLS check
+does not prove that the EC2 security group allows public TCP 443.
+
+8. PREPARE THE FIRST REAL TOURNAMENT
+
+Sign in at /arena-admin/ using the account you created in step 3.
+Open Tournaments, then 'Free Fire — draft tournament'.
+
+Enter the real tournament name, mode/format, players per entry, entry
+capacity, start time, registration deadline, entry terms, and full rules.
+Enter confirmed prize details if any. For a team event, capacity counts
+teams, and players per entry includes the captain. Times are Cameroon local
+time. Use the View on site control to preview the private draft.
+
+When the details are ready, choose Registration open and save. The event
+then appears on the public Free Fire listing. A published event cannot be
+returned to draft; choose Registration closed when entries should stop.
+Registration also closes automatically when its deadline or start time
+arrives. Pending plus approved entries cannot exceed capacity.
+
+Open Entries to review gaming names, IDs, team rosters and terms accepted.
+Approve or reject individually, or use the bulk actions. The player's
+private receipt reflects the current status. This release does not send
+email or other notifications, so participants must revisit their status link.
+
+OPERATIONS AND RECOVERY
+
+Service status:
+sudo systemctl status ce-arena-registration --no-pager
+
+Recent backend errors:
+sudo journalctl -u ce-arena-registration -n 60 --no-pager
+
+Create a consistent private database backup:
+~/ce-arena-backend/.venv/bin/python ~/ce-arena-backend/app/manage.py backup_arena
+
+Backups stay outside the website. The registration database and secret
+configuration must not be copied into /home/ubuntu/ce-arena. No automatic
+off-server database backup or retention/deletion schedule is configured by
+this release. Retain a current private backup before changing the app.
+
+The preparation journal records original files and the prior database.
+Rollback cannot uninstall or downgrade packages that pip already installed;
+the installer reports this limitation if preparation fails. If it cannot
+confirm that the service has stopped or safely restore the database, it
+preserves application files and configuration for recovery. Review the
+reported journal and residual files before retrying an incomplete rollback.
+An active deployment refuses a new --prepare run, to prevent an unreviewed
+live update.
+
+TESTED RELEASE
+
+39 local behavioral tests passed on Python 3.12.14, Django 5.2.18 and
+Gunicorn 26.2.0. They cover database persistence, duplicates, team roster
+validation, closed/full tournaments, two simultaneous requests for the last
+place, repeated form submission, changed rules, admin permissions and audit
+records, CSRF, receipt privacy, throttling and Unicode length limits.
+Production-style Gunicorn startup, migrations, draft-only public state,
+management login rendering and hashed asset collection were also checked.
+The installer reruns the behavioral tests on your server's Python 3.14.4.
+All 39 also passed there during the initial preparation attempt. That attempt
+exposed a WorkingDirectory quoting error, now corrected and checked with the
+real systemd parser. Service startup and public activation still require a
+successful preparation and activation on the server.
+
+IP-address deployment intentionally does not enable domain-wide HSTS
+subdomain/preload options; the corresponding two Django checks are silenced
+only for an IP public_host. All other production checks remain enabled.
+Browser layout and public HTTPS reachability still need live verification
+after you execute the installation and activation commands.
+
+OFFICIAL REFERENCES
+
+Django 5.2 and Python 3.14:
+https://docs.djangoproject.com/en/5.2/releases/5.2.8/
+Django supported releases:
+https://www.djangoproject.com/download/
+SQLite transaction behavior:
+https://docs.djangoproject.com/en/5.2/ref/databases/
+CSRF and Referer behavior:
+https://docs.djangoproject.com/en/5.2/ref/csrf/
+Certbot IP-address certificate workflow:
+https://letsencrypt.org/2026/03/11/shorter-certs-certbot
+IP certificate lifetime:
+https://letsencrypt.org/2026/01/15/6day-and-ip-general-availability
+Certbot Snap installation and renewal:
+https://certbot.eff.org/instructions?ws=nginx&os=snap

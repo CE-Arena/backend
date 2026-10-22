@@ -1,0 +1,131 @@
+{% extends 'arena/base.html' %}
+{% load static tz %}
+{% block title %}{% if section == 'rules' %}Rules{% elif section == 'schedule' %}Schedule{% elif section == 'prizes' %}Prizes{% else %}Registration{% endif %} | {{ tournament.title }} | CE ARENA{% endblock %}
+{% block description %}Official {% if section == 'rules' %}rules{% elif section == 'schedule' %}schedule{% elif section == 'prizes' %}prizes{% else %}registration information{% endif %} for {{ tournament.title }}.{% endblock %}
+{% block metadata %}
+<link rel="stylesheet" href="{% static 'arena/ce-arena-detail-theme.css' %}">
+<link rel="stylesheet" href="{% static 'arena/ce-arena-detail-sections.css' %}">
+{% endblock %}
+{% block breadcrumbs %}
+<nav class="ce-tournament-breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="{% url 'arena:tournament_list' %}">Tournaments</a></li><li><a href="{% url 'arena:tournament_detail' tournament.pk %}">{{ tournament.title }}</a></li><li aria-current="page">{% if section == 'rules' %}Rules{% elif section == 'schedule' %}Schedule{% elif section == 'prizes' %}Prizes{% else %}Registration{% endif %}</li></ol></nav>
+{% endblock %}
+{% block content %}
+<div class="ce-pro-detail ce-pro-section-page">
+  <section class="ce-pro-hero" aria-labelledby="page-title">
+    <div class="ce-pro-hero-art" aria-hidden="true">{% include 'arena/_tournament_artwork.html' %}</div>
+    <div class="ce-pro-hero-wash" aria-hidden="true"></div>
+    <div class="ce-pro-hero-inner">
+      <div class="ce-pro-hero-kicker"><span class="ce-pro-game-pill">{{ tournament.game_label }}</span><span class="ce-pro-kicker-text">CE ARENA TOURNAMENT</span></div>
+      <h1 id="page-title">{{ tournament.title }}</h1>
+      <p class="ce-pro-hero-lead">{{ tournament.format_label|default:'Competition format to be announced' }} · {% if tournament.team_size > 1 %}Teams of {{ tournament.team_size }} players{% else %}Solo competition{% endif %}</p>
+      <div class="ce-pro-hero-facts" aria-label="Tournament highlights">
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">START DATE</span><strong>{% if tournament.start_at %}<time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'j M Y · H:i' }}</time>{% else %}To be announced{% endif %}</strong></div>
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">COMPETITION</span><strong>{% if tournament.team_size > 1 %}{{ tournament.team_size }}-player teams{% else %}Individual players{% endif %}</strong></div>
+        <div class="ce-pro-hero-fact"><span class="ce-pro-fact-label">CAPACITY</span><strong>{% if tournament.capacity %}{{ tournament.capacity }} {% if tournament.team_size > 1 %}teams{% else %}players{% endif %}{% else %}To be announced{% endif %}</strong></div>
+      </div>
+    </div>
+  </section>
+
+
+  <nav class="ce-pro-tabs" aria-label="Tournament pages">
+    <a href="{% url 'arena:tournament_detail' tournament.pk %}">Overview</a>
+    <a href="{% url 'arena:tournament_rules' tournament.pk %}"{% if section == 'rules' %} aria-current="page"{% endif %}>Rules</a>
+    <a href="{% url 'arena:tournament_schedule' tournament.pk %}"{% if section == 'schedule' %} aria-current="page"{% endif %}>Schedule</a>
+    <a href="{% url 'arena:tournament_prizes' tournament.pk %}"{% if section == 'prizes' %} aria-current="page"{% endif %}>Prizes</a>
+    <a href="{% url 'arena:tournament_registration' tournament.pk %}"{% if section == 'registration' %} aria-current="page"{% endif %}>Registration</a>
+  </nav>
+  <div class="ce-pro-layout">
+    <div class="ce-pro-primary-column">
+    {% if section == 'rules' %}
+      <section class="ce-pro-panel ce-pro-section-panel" aria-labelledby="section-heading">
+        <p class="ce-pro-overline">COMPETITION GUIDELINES</p>
+        <h2 id="section-heading">Official tournament rules</h2>
+        <p class="ce-pro-muted">Read the organiser's published rules before entering {{ tournament.title }}.</p>
+        {% if tournament.rules %}
+          <div class="ce-pro-section-text">{{ tournament.rules|linebreaksbr }}</div>
+        {% else %}
+          <div class="ce-pro-notice"><strong>Rules not yet published</strong><p>The organiser has not provided official competition rules for this event. Check back for the published rules before competing.</p></div>
+        {% endif %}
+      </section>
+      <section class="ce-pro-panel ce-pro-section-panel">
+        <p class="ce-pro-overline">PLAYER REQUIREMENTS</p>
+        <h2>Entry format &amp; eligibility</h2>
+        <dl class="ce-pro-overview-facts ce-pro-section-facts">
+          <div><dt>Game</dt><dd>{{ tournament.game_label }}</dd></div>
+          <div><dt>Competition format</dt><dd>{{ tournament.format_label|default:'To be announced' }}</dd></div>
+          <div><dt>Roster requirement</dt><dd>{% if tournament.team_size > 1 %}{{ tournament.team_size }} players per team{% else %}One player per entry{% endif %}</dd></div>
+          <div><dt>Competition capacity</dt><dd>{{ tournament.capacity|default:'To be announced' }} {% if tournament.team_size > 1 %}teams{% else %}players{% endif %}</dd></div>
+        </dl>
+        <h3 class="ce-pro-section-subtitle">Published entry terms</h3>
+        {% if tournament.entry_terms %}<div class="ce-pro-section-text">{{ tournament.entry_terms|linebreaksbr }}</div>{% else %}<p class="ce-pro-muted">Specific entry terms have not been published. No additional eligibility requirements are assumed.</p>{% endif %}
+        <a class="ce-pro-panel-link" href="{% url 'arena:tournament_registration' tournament.pk %}">Review registration information →</a>
+      </section>
+
+    {% elif section == 'schedule' %}
+      <section class="ce-pro-panel ce-pro-section-panel" aria-labelledby="section-heading">
+        <p class="ce-pro-overline">OFFICIAL TOURNAMENT TIMELINE</p>
+        <h2 id="section-heading">Tournament schedule</h2>
+        <p class="ce-pro-muted">Confirmed event dates and deadlines. All times shown in {{ timezone_label|default:'Africa/Douala (UTC+1)' }}.</p>
+        <ol class="ce-pro-timeline">
+          <li><span class="ce-pro-timeline-dot" aria-hidden="true"></span><div><span class="ce-pro-step-label">REGISTRATION DEADLINE</span><strong>{% if tournament.registration_deadline %}<time datetime="{{ tournament.registration_deadline|date:'c' }}">{{ tournament.registration_deadline|localtime|date:'l, j F Y · H:i' }}</time>{% else %}Not announced{% endif %}</strong><p>Entries must be submitted before the published deadline while registration is available.</p></div></li>
+          <li><span class="ce-pro-timeline-dot" aria-hidden="true"></span><div><span class="ce-pro-step-label">TOURNAMENT START</span><strong>{% if tournament.start_at %}<time datetime="{{ tournament.start_at|date:'c' }}">{{ tournament.start_at|localtime|date:'l, j F Y · H:i' }}</time>{% else %}Not announced{% endif %}</strong><p>Event start time provided by the organiser.</p></div></li>
+        </ol>
+      </section>
+      <section class="ce-pro-panel ce-pro-section-panel">
+        <p class="ce-pro-overline">MATCHES &amp; BRACKETS</p>
+        <h2>Match fixtures</h2>
+        <div class="ce-pro-notice"><strong>Match-by-match schedule not published</strong><p>This tournament record does not yet include individual match times, opponents, brackets or check-in windows. They will appear only after the organiser publishes them; the dates above should not be interpreted as a complete match schedule.</p></div>
+        <a class="ce-pro-panel-link" href="{% url 'arena:tournament_rules' tournament.pk %}">Read tournament rules →</a>
+      </section>
+
+    {% elif section == 'prizes' %}
+      <section class="ce-pro-panel ce-pro-section-panel" aria-labelledby="section-heading">
+        <p class="ce-pro-overline">REWARDS &amp; RECOGNITION</p>
+        <h2 id="section-heading">Tournament prizes</h2>
+        <p class="ce-pro-muted">Only rewards announced by CE ARENA organisers are displayed below.</p>
+        {% if tournament.prize_details %}<div class="ce-pro-section-text ce-pro-prize-text">{{ tournament.prize_details|linebreaksbr }}</div>{% else %}<div class="ce-pro-notice"><strong>Prize details not announced</strong><p>The organiser has not published prize amounts, rewards or placement details for this tournament. No prize pool is guaranteed by this page.</p></div>{% endif %}
+      </section>
+      <section class="ce-pro-panel ce-pro-section-panel">
+        <p class="ce-pro-overline">PARTICIPATION CONDITIONS</p>
+        <h2>Entry terms</h2>
+        {% if tournament.entry_terms %}<div class="ce-pro-section-text">{{ tournament.entry_terms|linebreaksbr }}</div>{% else %}<p class="ce-pro-muted">Entry terms have not been announced.</p>{% endif %}
+        <p class="ce-pro-footnote">Prize eligibility and distribution requirements must come from the organiser's published rules and terms.</p>
+        <a class="ce-pro-panel-link" href="{% url 'arena:tournament_rules' tournament.pk %}">Review competition rules →</a>
+      </section>
+
+    {% elif section == 'registration' %}
+      <section class="ce-pro-panel ce-pro-section-panel" aria-labelledby="section-heading">
+        <p class="ce-pro-overline">JOIN CE ARENA</p>
+        <h2 id="section-heading">Tournament registration</h2>
+        <div class="ce-pro-reg-badge{% if tournament.registration_is_open and spots_left > 0 %} is-open{% endif %}">{% if tournament.status == 'draft' %}Draft · not published{% elif tournament.status == 'completed' %}Tournament completed{% elif tournament.registration_is_open and spots_left > 0 %}Registration open{% elif spots_left == 0 %}All places reserved{% else %}Registration closed{% endif %}</div>
+        <dl class="ce-pro-overview-facts ce-pro-section-facts">
+          <div><dt>Entry format</dt><dd>{% if tournament.team_size > 1 %}Team of {{ tournament.team_size }} players{% else %}Individual player{% endif %}</dd></div>
+          <div><dt>Places available</dt><dd>{{ spots_left }} of {{ tournament.capacity|default:0 }}</dd></div>
+          <div><dt>Registration deadline</dt><dd>{% if tournament.registration_deadline %}{{ tournament.registration_deadline|localtime|date:'j M Y · H:i' }}{% else %}Not published{% endif %}</dd></div>
+          <div><dt>Entry review</dt><dd>Organiser approval required</dd></div>
+        </dl>
+        {% if tournament.registration_is_open and spots_left > 0 %}
+          <p class="ce-pro-muted ce-pro-section-spacing">Registration is accepting entries. Review the rules and terms first, then complete the official CE ARENA registration form.</p>
+          <a class="ce-pro-button ce-pro-button-primary ce-pro-section-cta" href="{% url 'arena:register' tournament.pk %}">{% if tournament.team_size > 1 %}REGISTER YOUR TEAM{% else %}REGISTER NOW{% endif %} <span aria-hidden="true">→</span></a>
+        {% else %}
+          <div class="ce-pro-notice ce-pro-section-spacing"><strong>Registration is unavailable</strong><p>{% if tournament.status == 'completed' %}This competition has finished.{% elif spots_left == 0 %}All places are currently reserved.{% else %}The organiser is not currently accepting registrations for this tournament.{% endif %}</p></div>
+        {% endif %}
+      </section>
+      <section class="ce-pro-panel ce-pro-section-panel">
+        <p class="ce-pro-overline">REGISTRATION PROCESS</p>
+        <h2>How registration works</h2>
+        <ol class="ce-pro-steps">
+          <li><strong>Review the official rules</strong><p>Confirm the game's format, eligibility and organiser terms.</p></li>
+          <li><strong>Prepare your entry</strong><p>{% if tournament.team_size > 1 %}Have the required {{ tournament.team_size }}-player roster ready.{% else %}Have your player information ready.{% endif %}</p></li>
+          <li><strong>Submit the registration form</strong><p>When registration is open, provide the information requested by the official form.</p></li>
+          <li><strong>Keep your receipt</strong><p>After successful submission, retain the receipt link and follow your entry status. Submission does not mean approval.</p></li>
+        </ol>
+        <h3 class="ce-pro-section-subtitle">Published entry terms</h3>
+        {% if tournament.entry_terms %}<div class="ce-pro-section-text">{{ tournament.entry_terms|linebreaksbr }}</div>{% else %}<p class="ce-pro-muted">No additional entry terms have been published.</p>{% endif %}
+        <a class="ce-pro-panel-link" href="{% url 'arena:privacy' %}">Registration privacy information →</a>
+      </section>
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
