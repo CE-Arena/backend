@@ -1,0 +1,71 @@
+{% if entries %}
+
+    <p class="ce-tournament-small">
+        Your tournament registrations are listed below,
+        starting with the most recent.
+    </p>
+
+    {% for entry in entries %}
+
+    <article class="ce-tournament-panel">
+
+        <p class="ce-tournament-eyebrow">
+            {{ entry.tournament.game_label }}
+        </p>
+
+        <h3>{{ entry.tournament.title }}</h3>
+
+        <p>
+            <strong>Registration status:</strong>
+            {{ entry.get_status_display }}
+        </p>
+
+        <p>
+            <strong>Gaming name:</strong>
+            {{ entry.gaming_name }}
+        </p>
+
+        {% if entry.team_name %}
+        <p>
+            <strong>Team:</strong>
+            {{ entry.team_name }}
+        </p>
+        {% endif %}
+
+        <p>
+            <strong>Submitted:</strong>
+            <time datetime="{{ entry.created_at|date:'c' }}">
+                {{ entry.created_at|date:'j M Y, H:i' }}
+            </time>
+        </p>
+
+        <a
+            href="{{ entry.get_absolute_url }}"
+            class="ce-tournament-button"
+        >
+            View Registration Receipt →
+        </a>
+
+    </article>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>
+        No tournament registrations are linked
+        to your account yet.
+    </p>
+
+    <p>
+        Explore available tournaments and join
+        your next competition.
+    </p>
+
+{% endif %}
+
+<p class="ce-tournament-small">
+    Registrations previously submitted as a guest
+    will not automatically appear here.
+    Keep your original registration receipt links private.
+</p>

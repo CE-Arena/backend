@@ -1,0 +1,43 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Email Verified | CE ARENA{% endblock %}
+{% block metadata %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+
+    <p class="ce-tournament-eyebrow">
+        CE ARENA · Account Activated
+    </p>
+
+    <h1>
+        Email verified.<br>
+        <span>Welcome to CE ARENA.</span>
+    </h1>
+
+    <p class="ce-tournament-lead">
+        Your account is now active.
+        You can sign in and explore tournaments.
+    </p>
+
+</section>
+
+<section class="ce-tournament-panel">
+
+    <h2>You're ready to compete.</h2>
+
+    <p>
+        Your email address has been successfully verified.
+    </p>
+
+    <a href="{% url 'accounts:login' %}"
+       class="ce-tournament-button ce-tournament-button-primary">
+        Login to CE ARENA →
+    </a>
+
+</section>
+
+{% endblock %}

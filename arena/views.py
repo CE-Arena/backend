@@ -58,7 +58,18 @@ def register(request, pk):
         if validate_roster(tournament, form, roster):
             token = form.cleaned_data["submission_token"]
             try:
-                entry = create_entry(tournament.pk, form.cleaned_data, list(roster.cleaned_data), token["key"], token["revision"])
+                entry = create_entry(
+                    tournament.pk,
+                    form.cleaned_data,
+                    list(roster.cleaned_data),
+                    token["key"],
+                    token["revision"],
+                    registered_by=(
+                        request.user
+                        if request.user.is_authenticated
+                        else None
+                    ),
+                )
             except (RegistrationUnavailable, DuplicatePlayer, InvalidSubmission) as exc:
                 form.add_error(None, str(exc))
                 response_status = 409

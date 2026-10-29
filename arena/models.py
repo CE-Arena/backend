@@ -101,6 +101,14 @@ class Entry(models.Model):
         REJECTED = "rejected", "Not approved"
 
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name="entries")
+    registered_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        editable=False,
+        related_name="submitted_tournament_entries",
+    )
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     gaming_name = models.CharField(max_length=60)
     player_id = models.CharField(max_length=80)

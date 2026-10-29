@@ -38,6 +38,7 @@ if CONFIG.get("secure_mode") is not True:
     raise ImproperlyConfigured("Public registration and administration require HTTPS.")
 
 INSTALLED_APPS = [
+    "accounts.apps.AccountsConfig",
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes",
     "django.contrib.sessions", "django.contrib.messages", "django.contrib.staticfiles",
     "arena.apps.ArenaConfig",
@@ -109,7 +110,7 @@ else:
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 SESSION_COOKIE_NAME = "ce_arena_session"
-SESSION_COOKIE_PATH = "/arena-admin/"
+SESSION_COOKIE_PATH = "/"
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
@@ -132,3 +133,38 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": "WARNING"},
 }
+
+
+# CE ARENA SMTP - EXPLICIT CONFIGURATION
+# Credentials remain outside the Git repository.
+# SMTP is enabled only when its credential path is supplied.
+
+import os as _ce_mail_os
+import json as _ce_mail_json
+
+_ce_mail_path = _ce_mail_os.environ.get(
+    "CE_ARENA_SMTP_CREDENTIALS"
+)
+
+if _ce_mail_path:
+    with open(_ce_mail_path, encoding="utf-8") as _ce_mail_file:
+        _ce_mail_credentials = _ce_mail_json.load(_ce_mail_file)
+
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    EMAIL_TIMEOUT = 15
+
+    EMAIL_HOST_USER = _ce_mail_credentials["email"]
+    EMAIL_HOST_PASSWORD = _ce_mail_credentials["app_password"]
+
+    DEFAULT_FROM_EMAIL = f"CE ARENA <{EMAIL_HOST_USER}>"
+
+    del _ce_mail_credentials
+
+# Set separately when a publicly reachable HTTPS endpoint is ready.
+CE_ARENA_PUBLIC_ORIGIN = _ce_mail_os.environ.get(
+    "CE_ARENA_PUBLIC_ORIGIN", ""
+).strip().rstrip("/")

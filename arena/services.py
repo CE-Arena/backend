@@ -18,13 +18,36 @@ def _same_submission(entry, cleaned_data, roster):
     actual = list(entry.participants.values_list("gaming_name", "player_id"))
     return entry.team_name == cleaned_data.get("team_name", "") and expected == actual
 
-def create_entry(tournament_id, cleaned_data, roster, submission_key, expected_revision):
+def create_entry(
+    tournament_id,
+    cleaned_data,
+    roster,
+    submission_key,
+    expected_revision,
+    *,
+    registered_by=None,
+):
+    if registered_by is not None and (
+        not getattr(registered_by, "is_authenticated", False)
+        or registered_by.pk is None
+    ):
+        raise InvalidSubmission("Invalid authenticated account.")
+
+    account_id = (
+        registered_by.pk if registered_by is not None else None
+    )
+
     try:
         with transaction.atomic():
             tournament = Tournament.objects.get(pk=tournament_id)
             existing = Entry.objects.filter(submission_key=submission_key).first()
             if existing:
                 if existing.tournament_id == tournament_id and _same_submission(existing, cleaned_data, roster):
+                    if existing.registered_by_id != account_id:
+                        raise InvalidSubmission(
+                            "This registration was submitted from another "
+                            "account or session. Start with a new form."
+                        )
                     return existing
                 raise InvalidSubmission("This form has already been used. Reload the page to start a new entry.")
             if not tournament.registration_is_open:
@@ -46,6 +69,7 @@ def create_entry(tournament_id, cleaned_data, roster, submission_key, expected_r
             if Participant.objects.filter(tournament=tournament, normalized_id__in=normalized_ids).exists():
                 raise DuplicatePlayer("One or more player IDs already has an entry for this tournament. Check the saved receipt or ask CE ARENA to review the existing entry.")
             entry = Entry.objects.create(
+                registered_by_id=account_id,
                 tournament=tournament, gaming_name=cleaned_data["gaming_name"], player_id=cleaned_data["player_id"],
                 team_name=cleaned_data.get("team_name", "") if tournament.team_size > 1 else "",
                 status=Entry.Status.PENDING, rules_snapshot=tournament.rules,

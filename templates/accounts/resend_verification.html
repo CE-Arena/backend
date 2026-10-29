@@ -1,0 +1,64 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Resend Verification | CE ARENA{% endblock %}
+
+{% block metadata %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+
+    <p class="ce-tournament-eyebrow">
+        CE ARENA · Account Verification
+    </p>
+
+    <h1>
+        Didn't receive your email?<br>
+        <span>Let's get you verified.</span>
+    </h1>
+
+    <p class="ce-tournament-lead">
+        Enter the email address used to create your account.
+    </p>
+
+</section>
+
+<div class="ce-tournament-layout">
+
+    <form class="ce-tournament-form"
+          method="post"
+          action="{% url 'accounts:resend_verification' %}">
+
+        {% csrf_token %}
+
+        <fieldset class="ce-tournament-form-panel">
+
+            <legend>Request another verification email</legend>
+
+            <div class="ce-tournament-form-fields">
+
+                {% for field in form.visible_fields %}
+                    {% include 'arena/_field.html' with field=field %}
+                {% endfor %}
+
+            </div>
+
+        </fieldset>
+
+        <button type="submit"
+                class="ce-tournament-button ce-tournament-button-primary">
+            Send Verification Email →
+        </button>
+
+        <p class="ce-tournament-small">
+            If your account exists and requires verification,
+            we'll send another link.
+        </p>
+
+    </form>
+
+</div>
+
+{% endblock %}

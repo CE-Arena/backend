@@ -17,7 +17,13 @@ class ResponsePrivacyMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         response["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-        if request.path.startswith("/arena-admin/") or request.path.startswith("/tournaments/entry/") or request.path.endswith("/register/"):
+        if (
+            request.path.startswith("/arena-admin/")
+            or request.path.startswith("/tournaments/entry/")
+            or request.path.startswith("/accounts/")
+            or request.path == "/dashboard/"
+            or request.path.endswith("/register/")
+        ):
             response["Cache-Control"] = "private, no-store, max-age=0"
             response["X-Robots-Tag"] = "noindex, nofollow, noarchive"
         if request.path.startswith("/tournaments/entry/"):
@@ -38,7 +44,7 @@ def client_address(request):
 
 class SubmissionLimitMiddleware:
     window_seconds = 600
-    limits = {"registration": 30, "login": 10}
+    limits = {"registration": 30, "login": 10, "player_login": 10, "player_signup": 5, "email_resend": 3}
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -50,6 +56,12 @@ class SubmissionLimitMiddleware:
                 scope = "registration"
             elif request.path == "/arena-admin/login/":
                 scope = "login"
+            elif request.path == "/accounts/login/":
+                scope = "player_login"
+            elif request.path == "/accounts/register/":
+                scope = "player_signup"
+            elif request.path == "/accounts/resend-verification/":
+                scope = "email_resend"
         if scope:
             now = timezone.now()
             window = int(time.time()) // self.window_seconds

@@ -1,0 +1,59 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Create Account | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+    <p class="ce-tournament-eyebrow">CE ARENA · Player Registration</p>
+    <h1>Create your account.<br><span>Enter the arena.</span></h1>
+    <p class="ce-tournament-lead">
+        Join CE ARENA and prepare to compete.
+    </p>
+</section>
+
+<div class="ce-tournament-layout">
+
+    <form class="ce-tournament-form"
+          method="post"
+          action="{% url 'accounts:signup' %}">
+
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="ce-tournament-error-summary" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <fieldset class="ce-tournament-form-panel">
+            <legend>Create your player account</legend>
+
+            <div class="ce-tournament-form-fields">
+                {% for field in form.visible_fields %}
+                    {% include 'arena/_field.html' with field=field %}
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <button type="submit"
+                class="ce-tournament-button ce-tournament-button-primary">
+            Create Account →
+        </button>
+
+    </form>
+
+    <aside class="ce-tournament-sidebar">
+        <div class="ce-tournament-panel">
+            <p class="ce-tournament-eyebrow">Already a player?</p>
+            <h2>Welcome back.</h2>
+            <p>Already have a CE ARENA account?</p>
+            <a href="{% url 'accounts:login' %}"
+               class="ce-tournament-button">
+                Login →
+            </a>
+        </div>
+    </aside>
+
+</div>
+{% endblock %}

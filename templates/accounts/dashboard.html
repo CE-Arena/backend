@@ -1,0 +1,62 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Player Dashboard | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+    <p class="ce-tournament-eyebrow">CE ARENA · Player Dashboard</p>
+
+    <h1>Welcome to the arena.<br>
+        <span>{{ player.username }}</span>
+    </h1>
+
+    <p class="ce-tournament-lead">
+        Your personal CE ARENA player area.
+    </p>
+</section>
+
+<div class="ce-tournament-layout">
+
+    <section class="ce-tournament-panel">
+        <p class="ce-tournament-eyebrow">Player Account</p>
+
+        <h2>Your Profile</h2>
+
+        <p><strong>Username:</strong> {{ player.username }}</p>
+        <p><strong>Email:</strong> {{ player.email }}</p>
+
+        <h2>My Tournaments</h2>
+
+        {% include 'accounts/_my_tournaments.html' %}
+
+        <a href="{% url 'arena:tournament_list' %}"
+           class="ce-tournament-button ce-tournament-button-primary">
+            Explore Tournaments →
+        </a>
+    </section>
+
+    <aside class="ce-tournament-sidebar">
+
+        <div class="ce-tournament-panel">
+            <p class="ce-tournament-eyebrow">Account Security</p>
+
+            <h2>Session</h2>
+
+            <p>You are currently signed in.</p>
+
+            <form method="post"
+                  action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="ce-tournament-button">
+                    Logout →
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+</div>
+{% endblock %}

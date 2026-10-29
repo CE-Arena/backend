@@ -1,0 +1,81 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Verify Email | CE ARENA{% endblock %}
+{% block referrer_policy %}strict-origin{% endblock %}
+{% block metadata %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+    <p class="ce-tournament-eyebrow">
+        CE ARENA · Account Security
+    </p>
+
+    <h1>
+        Confirm your email.<br>
+        <span>Join the arena.</span>
+    </h1>
+
+    <p class="ce-tournament-lead">
+        Verify your email address to activate your player account.
+    </p>
+</section>
+
+<div class="ce-tournament-layout">
+
+    <section class="ce-tournament-panel">
+
+        {% if invalid %}
+
+        <h2>Verification unsuccessful</h2>
+
+        <div class="ce-tournament-error-summary" role="alert">
+            <p>
+                This verification link is invalid,
+                expired, or has already been used.
+            </p>
+        </div>
+
+        <p>
+            Contact CE ARENA support if you need
+            assistance with account activation.
+        </p>
+
+        {% else %}
+
+        <h2>One final step.</h2>
+
+        <p>
+            Click the button below to confirm
+            your email address and activate your account.
+        </p>
+
+        <form method="post"
+              action="{% url 'accounts:verify_submit' %}">
+
+            {% csrf_token %}
+
+            <input type="hidden"
+                   name="token"
+                   value="{{ token }}">
+
+            <button type="submit"
+                    class="ce-tournament-button ce-tournament-button-primary">
+                Verify My Email →
+            </button>
+
+        </form>
+
+        <p class="ce-tournament-small">
+            Verification links expire after 24 hours.
+        </p>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

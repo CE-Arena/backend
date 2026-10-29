@@ -1,0 +1,65 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Check Your Email | CE ARENA{% endblock %}
+
+{% block metadata %}
+<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+
+    <p class="ce-tournament-eyebrow">
+        CE ARENA · Account Verification
+    </p>
+
+    <h1>
+        Check your inbox.<br>
+        <span>You're almost ready.</span>
+    </h1>
+
+    <p class="ce-tournament-lead">
+        If you recently registered, check your email
+        for a CE ARENA verification message.
+    </p>
+
+</section>
+
+<section class="ce-tournament-panel">
+
+    <h2>Verify your email address</h2>
+
+    <p>
+        Open your verification email and follow
+        the instructions to activate your account.
+    </p>
+
+    <p>
+        Verification links expire after 24 hours.
+    </p>
+
+    <p>
+        If you cannot find the message, check your
+        spam or junk folder.
+    </p>
+
+    <p>
+        If the message does not arrive, contact
+        CE ARENA support for assistance.
+    </p>
+
+    <p>
+        <a href="{% url 'accounts:resend_verification' %}">
+            Request another verification email
+        </a>
+    </p>
+
+    <a href="{% url 'accounts:login' %}"
+       class="ce-tournament-button ce-tournament-button-primary">
+        Go to Login →
+    </a>
+
+</section>
+
+{% endblock %}

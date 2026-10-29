@@ -1,0 +1,65 @@
+{% extends 'arena/base.html' %}
+
+{% block title %}Player Login | CE ARENA{% endblock %}
+{% block metadata %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<section class="ce-tournament-intro ce-tournament-intro-detail">
+    <p class="ce-tournament-eyebrow">CE ARENA · Player Login</p>
+    <h1>Welcome back.<br><span>Ready to compete?</span></h1>
+    <p class="ce-tournament-lead">
+        Sign in to access your CE ARENA player account.
+    </p>
+</section>
+
+<div class="ce-tournament-layout">
+
+    <form class="ce-tournament-form"
+          method="post"
+          action="{% url 'accounts:login' %}">
+
+        {% csrf_token %}
+
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+
+        {% if form.non_field_errors %}
+        <div class="ce-tournament-error-summary" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <fieldset class="ce-tournament-form-panel">
+            <legend>Player Login</legend>
+
+            <div class="ce-tournament-form-fields">
+                {% for field in form.visible_fields %}
+                    {% include 'arena/_field.html' with field=field %}
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <button type="submit"
+                class="ce-tournament-button ce-tournament-button-primary">
+            Login →
+        </button>
+
+    </form>
+
+    <aside class="ce-tournament-sidebar">
+        <div class="ce-tournament-panel">
+            <p class="ce-tournament-eyebrow">New to CE ARENA?</p>
+            <h2>Join the competition.</h2>
+
+            <p>Create your player account to get started.</p>
+
+            <a href="{% url 'accounts:signup' %}"
+               class="ce-tournament-button">
+                Create Account →
+            </a>
+        </div>
+    </aside>
+
+</div>
+{% endblock %}
